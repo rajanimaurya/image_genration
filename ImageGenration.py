@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # Load API Key
 API_KEY = os.getenv("HuggingFaceAPIKey")
 if not API_KEY:
-    logging.error("❌ API Key not found. Set it in environment variables.")
+    logging.error(" API Key not found. Set it in environment variables.")
 
 # Hugging Face API URL
 API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0"
@@ -39,11 +39,11 @@ def open_image(prompt):
         image_path = os.path.join(folder_path, jpg_file)
         try:
             img = Image.open(image_path)
-            logging.info(f"📸 Opening image: {image_path}")
+            logging.info(f"Opening image: {image_path}")
             img.show()
             time.sleep(1)
         except IOError:
-            logging.error(f"❌ Unable to open {image_path}")
+            logging.error(f" Unable to open {image_path}")
 
 async def query(payload):
     """Makes an API request to Hugging Face for image generation."""
@@ -59,7 +59,7 @@ async def query(payload):
         response.raise_for_status()
         return response.content
     except requests.exceptions.RequestException as e:
-        logging.error(f"❌ Request failed: {e}")
+        logging.error(f"Request failed: {e}")
         return None  # Handle failed requests properly
 
 async def generate_image(prompt: str):
@@ -81,9 +81,9 @@ async def generate_image(prompt: str):
             file_path = os.path.join("Data", f"{prompt.replace(' ', '_')}_v{i+1}.jpg")
             with open(file_path, "wb") as f:
                 f.write(image_bytes)
-            logging.info(f"✅ Image saved: {file_path}")
+            logging.info(f" Image saved: {file_path}")
         else:
-            logging.error(f"❌ Skipping image {i+1} due to failed API response.")
+            logging.error(f"Skipping image {i+1} due to failed API response.")
 
 def generate_images(prompt: str):
     """Runs the image generation process and displays images."""
@@ -100,7 +100,7 @@ def images_to_video(prompt, frame_rate=10):
     image_paths = [os.path.join(folder_path, img) for img in image_files]
 
     if not image_paths:
-        logging.error("❌ No images found for video generation!")
+        logging.error("No images found for video generation!")
         return None
 
     # Open first image to get dimensions
@@ -116,23 +116,23 @@ def images_to_video(prompt, frame_rate=10):
     for img_path in image_paths:
         img = cv.imread(img_path)
         if img is None:
-            logging.warning(f"⚠ Skipping missing image: {img_path}")
+            logging.warning(f" Skipping missing image: {img_path}")
             continue
         video_writer.write(img)
 
     video_writer.release()
-    logging.info(f"🎥 Video saved: {video_filename}")
+    logging.info(f" Video saved: {video_filename}")
     return video_filename
 
 def play_video(video_path):
     """Plays the generated video automatically using OpenCV."""
     if not os.path.exists(video_path):
-        logging.error("❌ Video Not Found!")
+        logging.error(" Video Not Found!")
         return
 
     cap = cv.VideoCapture(video_path)
     if not cap.isOpened():
-        logging.error("❌ OpenCV Cannot Read the Video!")
+        logging.error(" OpenCV Cannot Read the Video!")
         return
 
     while cap.isOpened():
@@ -140,7 +140,7 @@ def play_video(video_path):
         if not ret:
             break  
         
-        cv.imshow("🎬 Playing Video", frame)
+        cv.imshow(" Playing Video", frame)
 
         if cv.waitKey(30) & 0xFF == 27:
             break
@@ -155,7 +155,7 @@ def generate_video_from_images():
     while True:
         try:
             if not os.path.exists(file_path):
-                logging.warning("❌ File ImageGeneration.data not found, waiting...")
+                logging.warning(" File ImageGeneration.data not found, waiting...")
                 time.sleep(2)
                 continue
             
@@ -170,15 +170,15 @@ def generate_video_from_images():
             prompt, status = data.split(",")
 
             if status.strip().lower() == "true":
-                logging.info(f"🎨 Generating image for prompt: {prompt.strip()}...")
+                logging.info(f" Generating image for prompt: {prompt.strip()}...")
                 generate_images(prompt.strip())
 
                 # Now create video
-                logging.info(f"🎥 Creating video from images...")
+                logging.info(f" Creating video from images...")
                 video_path = images_to_video(prompt.strip())
 
                 if video_path:
-                    logging.info(f"🎬 Playing video automatically...")
+                    logging.info(f"Playing video automatically...")
                     play_video(video_path)  # 🔹 **Added for Auto Play**
                 
                 # Update status in file
@@ -189,10 +189,10 @@ def generate_video_from_images():
                 time.sleep(1)
 
         except FileNotFoundError:
-            logging.error("❌ File not found. Retrying...")
+            logging.error(" File not found. Retrying...")
             time.sleep(2)
         except Exception as e:
-            logging.error(f"⚠ Unexpected error: {e}")
+            logging.error(f"⚠Unexpected error: {e}")
             time.sleep(2)
 
 # Run the Full AI Pipeline
